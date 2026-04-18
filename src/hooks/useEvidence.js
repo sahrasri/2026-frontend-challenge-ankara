@@ -11,9 +11,23 @@ import {
 const norm = (s) => (s ?? "").toString().toLowerCase().trim();
 
 /**
+ * Check if timestamps match (within same day)
+ */
+const timestaysMatch = (ts1, ts2) => {
+  if (!ts1 || !ts2) return false;
+  if (!(ts1 instanceof Date) || !(ts2 instanceof Date)) return false;
+  return (
+    ts1.getFullYear() === ts2.getFullYear() &&
+    ts1.getMonth() === ts2.getMonth() &&
+    ts1.getDate() === ts2.getDate()
+  );
+};
+
+/**
  * Fetches personal notes + anonymous tips (both endpoints) and returns
- * a `findRelated({ persons, location })` function that picks out the
- * notes/tips matching a given investigation item.
+ * a `findRelated({ persons, location, timestamp })` function that picks out the
+ * notes/tips matching a given investigation item. Full matches (person + location + time)
+ * are marked with fullMatch flag.
  */
 export const useEvidence = () => {
   const notesQuery = useAsyncData(getPersonalNotes);
@@ -32,69 +46,44 @@ export const useEvidence = () => {
     return ({ persons = [], location = null, timestamp = null } = {}) => {
       const people = persons.map(norm).filter(Boolean);
       const loc = norm(location);
-      const time = timestamp;
 
-      const scoreNote = (n) => {
+      const matchNote = (n) => {
         const mp = norm(n.mentionedPeople);
         const author = norm(n.author);
         const nl = norm(n.location);
-
-        let score = 0;
-        const matchPersons = people.some((p) => mp.includes(p) || author === p);
-        const matchLocation = loc && nl === loc;
-        const matchTime =
-          time &&
-          n.timestamp &&
-          Math.abs(n.timestamp.getTime() - time.getTime()) <
-            24 * 60 * 60 * 1000; // within 24 hours
-
-        if (matchPersons) score += 1;
-        if (matchLocation) score += 1;
-        if (matchTime) score += 1;
-
-        return { match: score > 0, score, isPerfect: score === 3 };
+        const byPerson = people.some((p) => mp.includes(p) || author === p);
+        const byLocation = loc && nl === loc;
+        const byTime = timestamp && timestaysMatch(n.timestamp, timestamp);
+        const fullMatch = byPerson && byLocation && byTime;
+        return { match: byPerson || byLocation, fullMatch };
       };
 
-      const scoreTip = (t) => {
+      const matchTip = (t) => {
         const suspect = norm(t.suspectName);
         const text = norm(t.tip);
         const tl = norm(t.location);
-
-        let score = 0;
-        const matchPersons = people.some(
-          (p) => suspect === p || text.includes(p),
-        );
-        const matchLocation = loc && tl === loc;
-        const matchTime =
-          time &&
-          t.timestamp &&
-          Math.abs(t.timestamp.getTime() - time.getTime()) <
-            24 * 60 * 60 * 1000; // within 24 hours
-
-        if (matchPersons) score += 1;
-        if (matchLocation) score += 1;
-        if (matchTime) score += 1;
-
-        return { match: score > 0, score, isPerfect: score === 3 };
+        const byPerson = people.some((p) => suspect === p || text.includes(p));
+        const byLocation = loc && tl === loc;
+        const byTime = timestamp && timestaysMatch(t.timestamp, timestamp);
+        const fullMatch = byPerson && byLocation && byTime;
+        return { match: byPerson || byLocation, fullMatch };
       };
 
       const matchedNotes = notes
         .map((n) => {
-          const scoring = scoreNote(n);
-          return { ...n, ...scoring };
+          const { match, fullMatch } = matchNote(n);
+          return match ? { ...n, fullMatch } : null;
         })
-        .filter((n) => n.match);
+        .filter(Boolean)
+        .sort((a, b) => (b.fullMatch ? 1 : 0) - (a.fullMatch ? 1 : 0));
 
       const matchedTips = tips
         .map((t) => {
-          const scoring = scoreTip(t);
-          return { ...t, ...scoring };
+          const { match, fullMatch } = matchTip(t);
+          return match ? { ...t, fullMatch } : null;
         })
-        .filter((t) => t.match);
-
-      // Sort by score descending (perfect matches first)
-      matchedNotes.sort((a, b) => b.score - a.score);
-      matchedTips.sort((a, b) => b.score - a.score);
+        .filter(Boolean)
+        .sort((a, b) => (b.fullMatch ? 1 : 0) - (a.fullMatch ? 1 : 0));
 
       return {
         notes: matchedNotes,

@@ -74,21 +74,23 @@ const EvidencePanel = ({
                   <li
                     key={n.id}
                     className={`${styles.note} ${
-                      n.isPerfect ? styles.perfect : ""
+                      n.fullMatch ? styles.fullMatch : ""
                     }`}
                   >
-                    {n.isPerfect && (
-                      <div className={styles.perfectBadge}>
-                        ⚡ Perfect Match
-                      </div>
-                    )}
                     <header className={styles.itemHeader}>
                       <span className={styles.author}>
                         Note from <strong>{n.author}</strong>
                       </span>
-                      <span className={styles.time}>
-                        {formatTime(n.timestamp)}
-                      </span>
+                      <div className={styles.badges}>
+                        {n.fullMatch && (
+                          <span className={styles.fullMatchBadge}>
+                            ✓ time location people
+                          </span>
+                        )}
+                        <span className={styles.time}>
+                          {formatTime(n.timestamp)}
+                        </span>
+                      </div>
                     </header>
                     {n.location && (
                       <span className={styles.meta}>📍 {n.location}</span>
@@ -117,24 +119,26 @@ const EvidencePanel = ({
                     key={t.id}
                     className={`${styles.tip} ${
                       styles[`conf_${t.confidence}`] ?? ""
-                    } ${t.isPerfect ? styles.perfect : ""}`}
+                    } ${t.fullMatch ? styles.fullMatch : ""}`}
                   >
-                    {t.isPerfect && (
-                      <div className={styles.perfectBadge}>
-                        ⚡ Perfect Match
-                      </div>
-                    )}
                     <header className={styles.itemHeader}>
                       <span className={styles.author}>
                         Tip about <strong>{t.suspectName}</strong>
                       </span>
-                      <span
-                        className={`${styles.confidence} ${
-                          styles[`confBadge_${t.confidence}`] ?? ""
-                        }`}
-                      >
-                        {t.confidence}
-                      </span>
+                      <div className={styles.badges}>
+                        {t.fullMatch && (
+                          <span className={styles.fullMatchBadge}>
+                            ✓ time location people
+                          </span>
+                        )}
+                        <span
+                          className={`${styles.confidence} ${
+                            styles[`confBadge_${t.confidence}`] ?? ""
+                          }`}
+                        >
+                          {t.confidence}
+                        </span>
+                      </div>
                     </header>
                     <span className={styles.time}>
                       {formatTime(t.timestamp)}
