@@ -1,16 +1,10 @@
 import { Routes, Route } from 'react-router-dom';
 import Home from '../pages/Home/Home';
 import Checkins from '../pages/Checkins/Checkins';
+import Messages from '../pages/Messages/Messages';
 import SectionPlaceholder from '../pages/SectionPlaceholder/SectionPlaceholder';
 
 const sectionRoutes = [
-  {
-    path: '/messages',
-    title: 'Messages',
-    description: 'Messages exchanged between people around the event.',
-    icon: '💬',
-    accent: 'orange',
-  },
   {
     path: '/sightings',
     title: 'Who is seen with who?',
@@ -40,6 +34,7 @@ function AppRoutes() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/checkins" element={<Checkins />} />
+      <Route path="/messages" element={<Messages />} />
       {sectionRoutes.map((section) => (
         <Route
           key={section.path}
