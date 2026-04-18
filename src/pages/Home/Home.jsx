@@ -26,22 +26,6 @@ const investigationSections = [
     icon: '👥',
     accent: 'yellow',
   },
-  {
-    title: 'Personal notes',
-    description:
-      'Private notes and comments from people close to the investigation.',
-    to: '/notes',
-    icon: '📝',
-    accent: 'blue',
-  },
-  {
-    title: 'Tips',
-    description:
-      'Anonymous tips with varying reliability — handle with a careful eye.',
-    to: '/tips',
-    icon: '🔎',
-    accent: 'orange',
-  },
 ];
 
 function Home() {
@@ -57,6 +41,11 @@ function Home() {
         <p className={styles.lead}>
           After the event, Podo was seen with different people at different
           places. Pick a thread below and start pulling.
+        </p>
+        <p className={styles.hint}>
+          🔍 Personal notes &amp; anonymous tips are wired into each section —
+          click any row in a timeline or list to reveal what the evidence board
+          knows.
         </p>
       </section>
 

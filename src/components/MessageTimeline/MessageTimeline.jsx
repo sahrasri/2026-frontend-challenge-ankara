@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import EvidenceBadge from '../EvidenceBadge/EvidenceBadge';
 import styles from './MessageTimeline.module.css';
 
 const PODO = 'Podo';
@@ -22,7 +23,7 @@ const dayKey = (d) =>
     ? `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
     : 'unknown';
 
-const MessageTimeline = ({ messages = [] }) => {
+const MessageTimeline = ({ messages = [], onRowClick, evidenceByItemId }) => {
   const grouped = useMemo(() => {
     const sorted = [...messages].sort(
       (a, b) => (a.timestamp?.getTime() ?? 0) - (b.timestamp?.getTime() ?? 0)
@@ -57,6 +58,9 @@ const MessageTimeline = ({ messages = [] }) => {
               const mentionsPodo =
                 !involvesPodo &&
                 msg.text?.toLowerCase().includes(PODO.toLowerCase());
+              const evidence = evidenceByItemId?.get(msg.id);
+              const clickable = !!onRowClick;
+              const handleClick = () => onRowClick?.(msg);
 
               return (
                 <li
@@ -65,9 +69,23 @@ const MessageTimeline = ({ messages = [] }) => {
                     styles.row,
                     involvesPodo ? styles.podoRow : '',
                     mentionsPodo ? styles.mentionRow : '',
+                    clickable ? styles.clickable : '',
                   ]
                     .filter(Boolean)
                     .join(' ')}
+                  onClick={clickable ? handleClick : undefined}
+                  onKeyDown={
+                    clickable
+                      ? (e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleClick();
+                          }
+                        }
+                      : undefined
+                  }
+                  tabIndex={clickable ? 0 : undefined}
+                  role={clickable ? 'button' : undefined}
                 >
                   <div className={styles.time}>
                     <span className={styles.timeValue}>
@@ -93,6 +111,12 @@ const MessageTimeline = ({ messages = [] }) => {
                         <span className={`${styles.urgency} ${styles[`urgency_${msg.urgency}`]}`}>
                           {msg.urgency}
                         </span>
+                      )}
+                      {evidence && (
+                        <EvidenceBadge
+                          notes={evidence.notes.length}
+                          tips={evidence.tips.length}
+                        />
                       )}
                     </div>
                     <p className={styles.text}>{msg.text}</p>

@@ -1,9 +1,12 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getSightings } from '../../api/sightings.crud';
 import { useAsyncData } from '../../hooks/useAsyncData';
+import { useEvidence } from '../../hooks/useEvidence';
 import { normalizeResponse, normalizeSighting } from '../../utils/normalize';
 import SightingMap from '../../components/Map/SightingMap';
+import EvidencePanel from '../../components/EvidencePanel/EvidencePanel';
+import EvidenceBadge from '../../components/EvidenceBadge/EvidenceBadge';
 import {
   LoadingView,
   ErrorView,
@@ -25,11 +28,31 @@ const formatTime = (d) =>
 
 const Sightings = () => {
   const { data, loading, error, refetch } = useAsyncData(getSightings);
+  const { findRelated } = useEvidence();
+  const [selected, setSelected] = useState(null);
 
   const sightings = useMemo(
     () => normalizeResponse(data, normalizeSighting),
     [data]
   );
+
+  const evidenceBySighting = useMemo(() => {
+    const map = new Map();
+    sightings.forEach((s) => {
+      map.set(
+        s.id,
+        findRelated({
+          persons: [s.personName, s.seenWith],
+          location: s.location,
+        })
+      );
+    });
+    return map;
+  }, [sightings, findRelated]);
+
+  const selectedEvidence = selected
+    ? evidenceBySighting.get(selected.id)
+    : null;
 
   const stats = useMemo(() => {
     const people = new Set();
@@ -84,13 +107,26 @@ const Sightings = () => {
 
           <section aria-label="Sightings list">
             <h2 className={styles.sectionTitle}>All sightings</h2>
+            <p className={styles.hint}>
+              🔍 Click a sighting to see related personal notes &amp; anonymous tips.
+            </p>
             <ol className={styles.list}>
               {sorted.map((s) => {
                 const involvesPodo = s.personName === PODO || s.seenWith === PODO;
+                const evidence = evidenceBySighting.get(s.id);
                 return (
                   <li
                     key={s.id}
-                    className={`${styles.row} ${involvesPodo ? styles.podoRow : ''}`}
+                    className={`${styles.row} ${involvesPodo ? styles.podoRow : ''} ${styles.clickable}`}
+                    onClick={() => setSelected(s)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelected(s);
+                      }
+                    }}
+                    tabIndex={0}
+                    role="button"
                   >
                     <div className={styles.rowMain}>
                       <span className={styles.pair}>
@@ -105,6 +141,12 @@ const Sightings = () => {
                       <span className={styles.meta}>
                         <span className={styles.location}>📍 {s.location}</span>
                         <span className={styles.time}>{formatTime(s.timestamp)}</span>
+                        {evidence && (
+                          <EvidenceBadge
+                            notes={evidence.notes.length}
+                            tips={evidence.tips.length}
+                          />
+                        )}
                       </span>
                     </div>
                     {s.note && <p className={styles.note}>{s.note}</p>}
@@ -115,6 +157,23 @@ const Sightings = () => {
           </section>
         </>
       )}
+
+      <EvidencePanel
+        open={!!selected}
+        onClose={() => setSelected(null)}
+        title={
+          selected
+            ? `${selected.personName} & ${selected.seenWith}`
+            : ''
+        }
+        subtitle={
+          selected
+            ? `${formatTime(selected.timestamp)} · ${selected.location}`
+            : ''
+        }
+        notes={selectedEvidence?.notes ?? []}
+        tips={selectedEvidence?.tips ?? []}
+      />
     </main>
   );
 };

@@ -2,9 +2,11 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getMessages } from '../../api/messages.crud';
 import { useAsyncData } from '../../hooks/useAsyncData';
+import { useEvidence } from '../../hooks/useEvidence';
 import { normalizeResponse, normalizeMessage } from '../../utils/normalize';
 import MessageThread from '../../components/MessageThread/MessageThread';
 import MessageTimeline from '../../components/MessageTimeline/MessageTimeline';
+import EvidencePanel from '../../components/EvidencePanel/EvidencePanel';
 import {
   LoadingView,
   ErrorView,
@@ -12,16 +14,43 @@ import {
 } from '../../components/StateViews/StateViews';
 import styles from './Messages.module.css';
 
+const formatTime = (d) =>
+  d instanceof Date
+    ? d.toLocaleString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : '—';
+
 const threadKey = (from, to) => [from, to].sort().join(' ↔ ');
 
 const Messages = () => {
   const { data, loading, error, refetch } = useAsyncData(getMessages);
+  const { findRelated } = useEvidence();
   const [activeKey, setActiveKey] = useState(null);
+  const [selectedMsg, setSelectedMsg] = useState(null);
 
   const messages = useMemo(
     () => normalizeResponse(data, normalizeMessage),
     [data]
   );
+
+  const evidenceByMessage = useMemo(() => {
+    const map = new Map();
+    messages.forEach((m) => {
+      map.set(
+        m.id,
+        findRelated({ persons: [m.from, m.to], location: m.location })
+      );
+    });
+    return map;
+  }, [messages, findRelated]);
+
+  const selectedEvidence = selectedMsg
+    ? evidenceByMessage.get(selectedMsg.id)
+    : null;
 
   const threads = useMemo(() => {
     const map = new Map();
@@ -129,10 +158,34 @@ const Messages = () => {
 
           <section className={styles.timelineSection}>
             <h2 className={styles.sectionTitle}>Timeline</h2>
-            <MessageTimeline messages={messages} />
+            <p className={styles.hint}>
+              🔍 Click a message to see related personal notes &amp; anonymous tips.
+            </p>
+            <MessageTimeline
+              messages={messages}
+              onRowClick={setSelectedMsg}
+              evidenceByItemId={evidenceByMessage}
+            />
           </section>
         </>
       )}
+
+      <EvidencePanel
+        open={!!selectedMsg}
+        onClose={() => setSelectedMsg(null)}
+        title={
+          selectedMsg
+            ? `${selectedMsg.from} → ${selectedMsg.to}`
+            : ''
+        }
+        subtitle={
+          selectedMsg
+            ? `${formatTime(selectedMsg.timestamp)}${selectedMsg.location ? ` · ${selectedMsg.location}` : ''}`
+            : ''
+        }
+        notes={selectedEvidence?.notes ?? []}
+        tips={selectedEvidence?.tips ?? []}
+      />
     </main>
   );
 };

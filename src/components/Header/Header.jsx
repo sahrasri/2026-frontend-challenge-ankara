@@ -6,8 +6,6 @@ const navItems = [
   { to: '/checkins', label: 'Check-ins' },
   { to: '/messages', label: 'Messages' },
   { to: '/sightings', label: 'Sightings' },
-  { to: '/notes', label: 'Notes' },
-  { to: '/tips', label: 'Tips' },
 ];
 
 const Header = () => {

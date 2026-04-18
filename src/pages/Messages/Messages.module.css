@@ -157,6 +157,17 @@
   border-bottom: 1px solid var(--border);
 }
 
+.hint {
+  font-size: 0.82rem;
+  color: var(--muted);
+  padding: 8px 12px;
+  background: var(--blue-soft);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--blue);
+  align-self: flex-start;
+  margin: 0;
+}
+
 @media (max-width: 720px) {
   .layout {
     grid-template-columns: 1fr;

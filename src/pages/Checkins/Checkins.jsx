@@ -1,10 +1,12 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getCheckins } from '../../api/checkins.crud';
 import { useAsyncData } from '../../hooks/useAsyncData';
+import { useEvidence } from '../../hooks/useEvidence';
 import { normalizeResponse, normalizeCheckin } from '../../utils/normalize';
 import PersonMap from '../../components/Map/PersonMap';
 import CheckinTimeline from '../../components/Timeline/CheckinTimeline';
+import EvidencePanel from '../../components/EvidencePanel/EvidencePanel';
 import {
   LoadingView,
   ErrorView,
@@ -12,15 +14,42 @@ import {
 } from '../../components/StateViews/StateViews';
 import styles from './Checkins.module.css';
 
+const formatTime = (d) =>
+  d instanceof Date
+    ? d.toLocaleString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : '—';
+
 const PODO_NAME = 'Podo';
 
 const Checkins = () => {
   const { data, loading, error, refetch } = useAsyncData(getCheckins);
+  const { findRelated } = useEvidence();
+  const [selected, setSelected] = useState(null);
 
   const checkins = useMemo(
     () => normalizeResponse(data, normalizeCheckin),
     [data]
   );
+
+  const evidenceByCheckin = useMemo(() => {
+    const map = new Map();
+    checkins.forEach((c) => {
+      map.set(
+        c.id,
+        findRelated({ persons: [c.personName], location: c.location })
+      );
+    });
+    return map;
+  }, [checkins, findRelated]);
+
+  const selectedEvidence = selected
+    ? evidenceByCheckin.get(selected.id)
+    : null;
 
   const stats = useMemo(() => {
     const uniquePeople = new Set(checkins.map((c) => c.personName));
@@ -90,10 +119,30 @@ const Checkins = () => {
 
           <section className={styles.timelineSection} aria-label="Timeline">
             <h2 className={styles.sectionTitle}>Timeline</h2>
-            <CheckinTimeline checkins={checkins} />
+            <p className={styles.hint}>
+              🔍 Click a row to see related personal notes &amp; anonymous tips.
+            </p>
+            <CheckinTimeline
+              checkins={checkins}
+              onRowClick={setSelected}
+              evidenceByItemId={evidenceByCheckin}
+            />
           </section>
         </>
       )}
+
+      <EvidencePanel
+        open={!!selected}
+        onClose={() => setSelected(null)}
+        title={
+          selected
+            ? `${selected.personName} @ ${selected.location}`
+            : ''
+        }
+        subtitle={selected ? formatTime(selected.timestamp) : ''}
+        notes={selectedEvidence?.notes ?? []}
+        tips={selectedEvidence?.tips ?? []}
+      />
     </main>
   );
 };

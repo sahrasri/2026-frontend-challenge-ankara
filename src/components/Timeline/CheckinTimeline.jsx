@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import EvidenceBadge from '../EvidenceBadge/EvidenceBadge';
 import styles from './CheckinTimeline.module.css';
 
 const PODO_NAME = 'Podo';
@@ -30,7 +31,7 @@ const dayKey = (d) =>
  * Sorts check-ins chronologically and groups by day.
  * Podo rows are styled with the orange accent and pinned with 🐾.
  */
-const CheckinTimeline = ({ checkins = [] }) => {
+const CheckinTimeline = ({ checkins = [], onRowClick, evidenceByItemId }) => {
   const grouped = useMemo(() => {
     const sorted = [...checkins].sort((a, b) => {
       const ta = a.timestamp ? a.timestamp.getTime() : 0;
@@ -76,10 +77,28 @@ const CheckinTimeline = ({ checkins = [] }) => {
               const mentionsPodo =
                 !isPodo &&
                 item.note?.toLowerCase().includes(PODO_NAME.toLowerCase());
+              const evidence = evidenceByItemId?.get(item.id);
+              const hasEvidence =
+                (evidence?.notes.length ?? 0) + (evidence?.tips.length ?? 0) > 0;
+              const handleClick = () => onRowClick?.(item);
+              const clickable = !!onRowClick;
               return (
                 <li
                   key={item.id}
-                  className={`${styles.row} ${isPodo ? styles.podoRow : ''} ${mentionsPodo ? styles.mentionRow : ''}`}
+                  className={`${styles.row} ${isPodo ? styles.podoRow : ''} ${mentionsPodo ? styles.mentionRow : ''} ${clickable ? styles.clickable : ''} ${hasEvidence ? styles.hasEvidence : ''}`}
+                  onClick={clickable ? handleClick : undefined}
+                  onKeyDown={
+                    clickable
+                      ? (e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleClick();
+                          }
+                        }
+                      : undefined
+                  }
+                  tabIndex={clickable ? 0 : undefined}
+                  role={clickable ? 'button' : undefined}
                 >
                   <div className={styles.time}>
                     <span className={styles.timeValue}>
@@ -102,6 +121,12 @@ const CheckinTimeline = ({ checkins = [] }) => {
                       <span className={styles.location}>
                         📍 {item.location}
                       </span>
+                      {evidence && (
+                        <EvidenceBadge
+                          notes={evidence.notes.length}
+                          tips={evidence.tips.length}
+                        />
+                      )}
                     </div>
                     {item.note && <p className={styles.note}>{item.note}</p>}
                   </div>
