@@ -1,0 +1,92 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 48px 0 64px;
+}
+
+.back {
+  align-self: flex-start;
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.back:hover {
+  color: var(--text-h);
+  background: var(--surface);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 40px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 6px;
+  background: var(--accent-color, var(--blue));
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: var(--accent-soft, var(--blue-soft));
+  color: var(--accent-color, var(--blue));
+  font-size: 26px;
+}
+
+.title {
+  font-size: 2rem;
+  color: var(--text-h);
+}
+
+.description {
+  color: var(--muted);
+  max-width: 640px;
+  line-height: 1.6;
+}
+
+.tag {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-color, var(--blue));
+  background: var(--accent-soft, var(--blue-soft));
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+.accent_blue {
+  --accent-color: var(--blue);
+  --accent-soft: var(--blue-soft);
+}
+
+.accent_orange {
+  --accent-color: var(--orange);
+  --accent-soft: var(--orange-soft);
+}
+
+.accent_yellow {
+  --accent-color: #ca8a04;
+  --accent-soft: var(--yellow-soft);
+}
