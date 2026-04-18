@@ -83,8 +83,8 @@ export const normalizeSighting = (submission) => {
   const fields = flattenAnswers(submission);
   return {
     id: submission.id,
-    personA: fields.personA ?? fields.person1 ?? 'Unknown',
-    personB: fields.personB ?? fields.person2 ?? 'Unknown',
+    personName: fields.personName ?? fields.personA ?? fields.person1 ?? 'Unknown',
+    seenWith: fields.seenWith ?? fields.personB ?? fields.person2 ?? 'Unknown',
     location: fields.location ?? 'Unknown',
     coordinates: parseCoordinates(fields.coordinates),
     timestamp: parseTimestamp(fields.timestamp),

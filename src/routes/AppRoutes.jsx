@@ -2,17 +2,10 @@ import { Routes, Route } from 'react-router-dom';
 import Home from '../pages/Home/Home';
 import Checkins from '../pages/Checkins/Checkins';
 import Messages from '../pages/Messages/Messages';
+import Sightings from '../pages/Sightings/Sightings';
 import SectionPlaceholder from '../pages/SectionPlaceholder/SectionPlaceholder';
 
 const sectionRoutes = [
-  {
-    path: '/sightings',
-    title: 'Who is seen with who?',
-    description:
-      'Sightings of people seen together at specific places and times.',
-    icon: '👥',
-    accent: 'yellow',
-  },
   {
     path: '/notes',
     title: 'Personal notes',
@@ -35,6 +28,7 @@ function AppRoutes() {
       <Route path="/" element={<Home />} />
       <Route path="/checkins" element={<Checkins />} />
       <Route path="/messages" element={<Messages />} />
+      <Route path="/sightings" element={<Sightings />} />
       {sectionRoutes.map((section) => (
         <Route
           key={section.path}

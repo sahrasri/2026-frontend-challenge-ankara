@@ -1,0 +1,164 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 32px 0 64px;
+}
+
+.back {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.back:hover { color: var(--text-h); }
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.eyebrow {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--yellow);
+}
+
+.title { margin: 0; }
+
+.lead {
+  color: var(--muted);
+  font-size: 1rem;
+  max-width: 560px;
+}
+
+/* ── stats ── */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statAccent {
+  border-color: var(--orange);
+  background: var(--orange-soft);
+}
+
+.statValue {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-h);
+  line-height: 1;
+  font-family: var(--mono);
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-h);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+/* ── list ── */
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  padding: 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.row + .row {
+  border-top: 1px dashed var(--border);
+}
+
+.rowMain {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pair {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
+.name {
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.podoName {
+  font-weight: 700;
+  color: var(--orange);
+}
+
+.amp {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.location {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.time {
+  font-size: 0.78rem;
+  font-family: var(--mono);
+  color: var(--muted);
+}
+
+.note {
+  font-size: 0.88rem;
+  color: var(--text);
+  font-style: italic;
+  margin: 0;
+  padding-left: 4px;
+  border-left: 2px solid var(--border);
+}
+
+.podoRow .note {
+  border-left-color: var(--orange);
+}
+
+@media (max-width: 720px) {
+  .statsRow { grid-template-columns: repeat(2, 1fr); }
+  .rowMain { flex-direction: column; align-items: flex-start; }
+}
