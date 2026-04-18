@@ -76,4 +76,6 @@ The landing page displays three investigation cards linking to the main sections
 The dashboard utilizes a relational engine that automatically links events with personal notes and anonymous tips based on person entities and geographic locations.
 By clicking the investigation icon, the system dynamically filters disparate intelligence sources to surface only the most relevant insights for a specific event or person.
 
+If mentioned people, location and time all matches, then it gives a warning.
+
 <img width="2505" height="1485" alt="image" src="https://github.com/user-attachments/assets/a1da761e-f945-43c3-a549-6877068d34e3" />
