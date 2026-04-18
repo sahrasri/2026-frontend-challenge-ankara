@@ -67,11 +67,14 @@ export const normalizeMessage = (submission) => {
   const fields = flattenAnswers(submission);
   return {
     id: submission.id,
-    from: fields.from ?? fields.sender ?? 'Unknown',
-    to: fields.to ?? fields.receiver ?? 'Unknown',
+    from: fields.senderName ?? fields.from ?? fields.sender ?? 'Unknown',
+    to: fields.recipientName ?? fields.to ?? fields.receiver ?? 'Unknown',
     timestamp: parseTimestamp(fields.timestamp),
     timestampRaw: fields.timestamp ?? null,
-    message: fields.message ?? fields.content ?? '',
+    text: fields.text ?? fields.message ?? fields.content ?? '',
+    location: fields.location ?? null,
+    coordinates: parseCoordinates(fields.coordinates),
+    urgency: fields.urgency ?? 'low',
   };
 };
 
