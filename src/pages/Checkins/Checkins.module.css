@@ -12,7 +12,9 @@
   text-decoration: none;
   padding: 6px 10px;
   border-radius: 8px;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .back:hover {
@@ -129,6 +131,16 @@
   border-radius: var(--radius-sm);
   border-left: 3px solid var(--blue);
   align-self: flex-start;
+}
+
+.noResults {
+  padding: 20px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.95rem;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border);
 }
 
 @media (max-width: 900px) {
