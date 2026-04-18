@@ -98,29 +98,29 @@ export const normalizePersonalNote = (submission) => {
   const fields = flattenAnswers(submission);
   return {
     id: submission.id,
-    author: fields.author ?? fields.personName ?? 'Unknown',
-    about: fields.about ?? fields.subject ?? '',
+    author: fields.authorName ?? fields.author ?? fields.personName ?? 'Unknown',
     timestamp: parseTimestamp(fields.timestamp),
     timestampRaw: fields.timestamp ?? null,
+    location: fields.location ?? null,
+    coordinates: parseCoordinates(fields.coordinates),
     note: fields.note ?? fields.content ?? '',
+    mentionedPeople: fields.mentionedPeople ?? '',
   };
 };
 
 /** Normalize an anonymous tip submission. */
 export const normalizeTip = (submission) => {
   const fields = flattenAnswers(submission);
-  const reliabilityRaw =
-    fields.reliability ?? fields.confidence ?? fields.rating ?? null;
-  const reliability =
-    reliabilityRaw !== null && reliabilityRaw !== ''
-      ? Number(reliabilityRaw)
-      : null;
   return {
     id: submission.id,
+    submissionDate: fields.submissionDate ?? null,
     timestamp: parseTimestamp(fields.timestamp),
     timestampRaw: fields.timestamp ?? null,
+    location: fields.location ?? null,
+    coordinates: parseCoordinates(fields.coordinates),
+    suspectName: fields.suspectName ?? 'Unknown',
     tip: fields.tip ?? fields.content ?? fields.note ?? '',
-    reliability: Number.isFinite(reliability) ? reliability : null,
+    confidence: fields.confidence ?? fields.reliability ?? 'low',
   };
 };
 
