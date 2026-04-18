@@ -1,16 +1,72 @@
-# React + Vite
+# Jotform Frontend Challenge Project
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+- **Name**: Sahra SARI
 
-Currently, two official plugins are available:
+## Setup Instructions
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### 1. Environment Variables
 
-## React Compiler
+Copy the `.env.example` file to create your `.env` file:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+cp .env.example .env
+```
 
-## Expanding the ESLint configuration
+Then fill in your Jotform credentials:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```env
+VITE_JOTFORM_API_KEY=your_api_key_here
+
+VITE_FORM_ID_CHECKINS=261065067494966
+VITE_FORM_ID_MESSAGES=261065765723966
+VITE_FORM_ID_SIGHTINGS=261065244786967
+VITE_FORM_ID_PERSONAL_NOTES=261065509008958
+VITE_FORM_ID_ANONYMOUS_TIPS=261065875889981
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Run Development Server
+
+```bash
+npm run dev
+```
+
+The app will be available at `http://localhost:5173`
+
+### 4. Build for Production
+
+```bash
+npm run build
+```
+
+---
+
+## Project Overview
+
+This is an **investigation tracker application** that helps solve a missing pet case by aggregating and visualizing data from Jotform submissions.
+
+### Dashboard
+
+The landing page displays three investigation cards linking to the main sections of the app.
+
+### Investigation Sections
+
+**📍 Check-ins** - Explore where people were and when they checked in. Features an interactive map, timeline view, and advanced search by person, location, or date range.
+
+**💬 Messages** - Track conversations between people. Organized by conversation threads with a full message timeline and search capabilities.
+
+**👥 Sightings** - Discover who was seen with whom and where. Interactive map visualization with evidence linking to personal notes and anonymous tips.
+
+### Key Features
+
+- Real-time data from Jotform API
+- Interactive maps with location pins
+- Advanced search & filtering (person, location, date range)
+- Evidence system linking personal notes and anonymous tips
+- Responsive design for desktop and mobile
+- Autocomplete suggestions for quick filtering
