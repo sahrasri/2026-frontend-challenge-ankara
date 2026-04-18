@@ -69,7 +69,11 @@ const Checkins = () => {
     filteredCheckins.forEach((c) => {
       map.set(
         c.id,
-        findRelated({ persons: [c.personName], location: c.location }),
+        findRelated({
+          persons: [c.personName],
+          location: c.location,
+          timestamp: c.timestamp,
+        }),
       );
     });
     return map;

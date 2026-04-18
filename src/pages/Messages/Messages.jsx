@@ -74,7 +74,11 @@ const Messages = () => {
     filteredMessages.forEach((m) => {
       map.set(
         m.id,
-        findRelated({ persons: [m.from, m.to], location: m.location }),
+        findRelated({
+          persons: [m.from, m.to],
+          location: m.location,
+          timestamp: m.timestamp,
+        }),
       );
     });
     return map;

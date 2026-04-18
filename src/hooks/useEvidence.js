@@ -1,14 +1,14 @@
-import { useMemo } from 'react';
-import { useAsyncData } from './useAsyncData';
-import { getPersonalNotes } from '../api/personalNotes.crud';
-import { getAnonymousTips } from '../api/anonymousTips.crud';
+import { useMemo } from "react";
+import { useAsyncData } from "./useAsyncData";
+import { getPersonalNotes } from "../api/personalNotes.crud";
+import { getAnonymousTips } from "../api/anonymousTips.crud";
 import {
   normalizeResponse,
   normalizePersonalNote,
   normalizeTip,
-} from '../utils/normalize';
+} from "../utils/normalize";
 
-const norm = (s) => (s ?? '').toString().toLowerCase().trim();
+const norm = (s) => (s ?? "").toString().toLowerCase().trim();
 
 /**
  * Fetches personal notes + anonymous tips (both endpoints) and returns
@@ -21,43 +21,84 @@ export const useEvidence = () => {
 
   const notes = useMemo(
     () => normalizeResponse(notesQuery.data, normalizePersonalNote),
-    [notesQuery.data]
+    [notesQuery.data],
   );
   const tips = useMemo(
     () => normalizeResponse(tipsQuery.data, normalizeTip),
-    [tipsQuery.data]
+    [tipsQuery.data],
   );
 
   const findRelated = useMemo(() => {
-    return ({ persons = [], location = null } = {}) => {
+    return ({ persons = [], location = null, timestamp = null } = {}) => {
       const people = persons.map(norm).filter(Boolean);
       const loc = norm(location);
+      const time = timestamp;
 
-      const matchNote = (n) => {
+      const scoreNote = (n) => {
         const mp = norm(n.mentionedPeople);
         const author = norm(n.author);
         const nl = norm(n.location);
-        const byPerson = people.some(
-          (p) => mp.includes(p) || author === p
-        );
-        const byLocation = loc && nl === loc;
-        return byPerson || byLocation;
+
+        let score = 0;
+        const matchPersons = people.some((p) => mp.includes(p) || author === p);
+        const matchLocation = loc && nl === loc;
+        const matchTime =
+          time &&
+          n.timestamp &&
+          Math.abs(n.timestamp.getTime() - time.getTime()) <
+            24 * 60 * 60 * 1000; // within 24 hours
+
+        if (matchPersons) score += 1;
+        if (matchLocation) score += 1;
+        if (matchTime) score += 1;
+
+        return { match: score > 0, score, isPerfect: score === 3 };
       };
 
-      const matchTip = (t) => {
+      const scoreTip = (t) => {
         const suspect = norm(t.suspectName);
         const text = norm(t.tip);
         const tl = norm(t.location);
-        const byPerson = people.some(
-          (p) => suspect === p || text.includes(p)
+
+        let score = 0;
+        const matchPersons = people.some(
+          (p) => suspect === p || text.includes(p),
         );
-        const byLocation = loc && tl === loc;
-        return byPerson || byLocation;
+        const matchLocation = loc && tl === loc;
+        const matchTime =
+          time &&
+          t.timestamp &&
+          Math.abs(t.timestamp.getTime() - time.getTime()) <
+            24 * 60 * 60 * 1000; // within 24 hours
+
+        if (matchPersons) score += 1;
+        if (matchLocation) score += 1;
+        if (matchTime) score += 1;
+
+        return { match: score > 0, score, isPerfect: score === 3 };
       };
 
+      const matchedNotes = notes
+        .map((n) => {
+          const scoring = scoreNote(n);
+          return { ...n, ...scoring };
+        })
+        .filter((n) => n.match);
+
+      const matchedTips = tips
+        .map((t) => {
+          const scoring = scoreTip(t);
+          return { ...t, ...scoring };
+        })
+        .filter((t) => t.match);
+
+      // Sort by score descending (perfect matches first)
+      matchedNotes.sort((a, b) => b.score - a.score);
+      matchedTips.sort((a, b) => b.score - a.score);
+
       return {
-        notes: notes.filter(matchNote),
-        tips: tips.filter(matchTip),
+        notes: matchedNotes,
+        tips: matchedTips,
       };
     };
   }, [notes, tips]);

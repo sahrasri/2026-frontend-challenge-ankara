@@ -76,6 +76,7 @@ const Sightings = () => {
         findRelated({
           persons: [s.personName, s.seenWith],
           location: s.location,
+          timestamp: s.timestamp,
         }),
       );
     });

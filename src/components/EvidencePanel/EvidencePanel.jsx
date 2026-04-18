@@ -1,15 +1,15 @@
-import { useEffect } from 'react';
-import styles from './EvidencePanel.module.css';
+import { useEffect } from "react";
+import styles from "./EvidencePanel.module.css";
 
 const formatTime = (d) =>
   d instanceof Date
-    ? d.toLocaleString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        hour: '2-digit',
-        minute: '2-digit',
+    ? d.toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
       })
-    : '—';
+    : "—";
 
 /**
  * Slide-in drawer showing the personal notes + anonymous tips that
@@ -25,9 +25,9 @@ const EvidencePanel = ({
 }) => {
   useEffect(() => {
     if (!open) return;
-    const onKey = (e) => e.key === 'Escape' && onClose();
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    const onKey = (e) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
   if (!open) return null;
@@ -48,11 +48,7 @@ const EvidencePanel = ({
             <h3 className={styles.title}>{title}</h3>
             {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
           </div>
-          <button
-            className={styles.close}
-            onClick={onClose}
-            aria-label="Close"
-          >
+          <button className={styles.close} onClick={onClose} aria-label="Close">
             ×
           </button>
         </header>
@@ -75,7 +71,17 @@ const EvidencePanel = ({
               </h4>
               <ul className={styles.list}>
                 {notes.map((n) => (
-                  <li key={n.id} className={styles.note}>
+                  <li
+                    key={n.id}
+                    className={`${styles.note} ${
+                      n.isPerfect ? styles.perfect : ""
+                    }`}
+                  >
+                    {n.isPerfect && (
+                      <div className={styles.perfectBadge}>
+                        ⚡ Perfect Match
+                      </div>
+                    )}
                     <header className={styles.itemHeader}>
                       <span className={styles.author}>
                         Note from <strong>{n.author}</strong>
@@ -110,16 +116,21 @@ const EvidencePanel = ({
                   <li
                     key={t.id}
                     className={`${styles.tip} ${
-                      styles[`conf_${t.confidence}`] ?? ''
-                    }`}
+                      styles[`conf_${t.confidence}`] ?? ""
+                    } ${t.isPerfect ? styles.perfect : ""}`}
                   >
+                    {t.isPerfect && (
+                      <div className={styles.perfectBadge}>
+                        ⚡ Perfect Match
+                      </div>
+                    )}
                     <header className={styles.itemHeader}>
                       <span className={styles.author}>
                         Tip about <strong>{t.suspectName}</strong>
                       </span>
                       <span
                         className={`${styles.confidence} ${
-                          styles[`confBadge_${t.confidence}`] ?? ''
+                          styles[`confBadge_${t.confidence}`] ?? ""
                         }`}
                       >
                         {t.confidence}
