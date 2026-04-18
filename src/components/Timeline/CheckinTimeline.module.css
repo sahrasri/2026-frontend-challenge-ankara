@@ -1,0 +1,193 @@
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.empty {
+  padding: 40px;
+  text-align: center;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+}
+
+.dayGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dayHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dayLabel {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.dayCount {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-family: var(--mono);
+  letter-spacing: 0.04em;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 64px 24px 1fr;
+  gap: 12px;
+  padding: 12px 0;
+  position: relative;
+}
+
+.row + .row {
+  border-top: 1px dashed var(--border);
+}
+
+.time {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.timeValue {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.marker::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+
+.dot {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--blue);
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px var(--blue-soft);
+  z-index: 1;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+.topLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+}
+
+.person {
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.location {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.note {
+  color: var(--text);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 2px 0 0;
+}
+
+/* Podo row — person IS Podo */
+.podoRow .dot {
+  background: var(--orange);
+  box-shadow: 0 0 0 3px var(--orange-soft);
+  width: 14px;
+  height: 14px;
+}
+
+.podoRow .timeValue {
+  color: var(--orange);
+  font-weight: 600;
+}
+
+.podoTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--orange-soft);
+  color: var(--orange);
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+
+.podoRow .content {
+  background: linear-gradient(
+    90deg,
+    rgba(249, 115, 22, 0.06) 0%,
+    rgba(249, 115, 22, 0) 100%
+  );
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin: -8px 0 -8px -8px;
+}
+
+/* Mention row — note contains "Podo" but person is someone else */
+.mentionRow .dot {
+  background: var(--red);
+  box-shadow: 0 0 0 3px var(--red-soft);
+  width: 14px;
+  height: 14px;
+}
+
+.mentionRow .timeValue {
+  color: var(--red);
+  font-weight: 600;
+}
+
+.mentionRow .content {
+  background: linear-gradient(
+    90deg,
+    rgba(220, 38, 38, 0.06) 0%,
+    rgba(220, 38, 38, 0) 100%
+  );
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin: -8px 0 -8px -8px;
+}
